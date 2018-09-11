@@ -104,35 +104,30 @@ class SrtShifter():
 
         return new_timestamp
 
-    def create_shifted_srt_file(self, shift, srt_text, time_stamps, srt_file_path):
+    def create_shifted_srt_file(self, shift, srt_text, time_stamps, srt_file_path,
+                                new_file_name):
         new_srt_text = srt_text
         for old_time_stamp in time_stamps:
             new_time_stamp = self.shift_timestamp(shift, old_time_stamp)
             new_srt_text = new_srt_text.replace(old_time_stamp, new_time_stamp)
 
-        new_file = open(srt_file_path.strip('.srt')+'resync'+'.srt', 'w')
+        new_file = open(srt_file_path.strip('.srt')+ new_file_name + '.srt', 'w')
         new_file.write(new_srt_text)
         new_file.close()
 
+    def shift_srt_file(self, srt_file_path, new_file_name, shift):
+        for enc in self.encodings:
+            try:
+                with open(srt_file_path, "r", encoding=enc) as srt_file:
+                    message = 'Enconding = ' + enc
+                    srt_text = srt_file.read()
+                    time_stamps = re.findall(self.time_stamp_regex, srt_text)
+                    self.create_shifted_srt_file(shift, srt_text, time_stamps,
+                                                 srt_file_path, new_file_name)
+                return message
+            except Exception:
+                continue
 
-def main(arg_list):
-    print(arg_list)
-    shift = float(arg_list[1])
-    srt_file_path = str(arg_list[0])
+        return 'Shift failed - check file encoding.'
 
-    for enc in encodings:
-        try:
-            with open(srt_file_path, "r", encoding=enc) as srt_file:
-                print('Encoding = ', enc)
-                srt_text = srt_file.read()
-                time_stamps = re.findall(time_stamp_regex, srt_text)
-                create_shifted_srt_file(shift, srt_text, time_stamps, srt_file_path)
-            break
-        except Exception:
-            print(enc, 'did not work.')
-            if enc == encodings[-1]:
-                sys.exit(1)
-            continue
 
-if __name__ == '__main__':
-    main(sys.argv[1:])

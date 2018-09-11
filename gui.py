@@ -1,4 +1,5 @@
 import wx
+from srt_shifter import SrtShifter
 
 
 HEIGHT = 600
@@ -8,6 +9,8 @@ WIDTH = 200
 class Gui(wx.Frame):
     def __init__(self, title):
         super().__init__(parent=None, title=title, size=(HEIGHT, WIDTH))
+
+        self.srt_shifter = SrtShifter()
 
         self.panel = wx.Panel(self)
 
@@ -22,10 +25,10 @@ class Gui(wx.Frame):
 
         self.filePicker = wx.FilePickerCtrl(self.panel, wx.ID_ANY,
                                             message='Select .srt File')
-        self.shiftMagnitudeSpin = wx.SpinCtrl(self.panel, wx.ID_ANY,
-                                              max=99999999999)
-        self.shiftedFileNameText = wx.TextCtrl(self.panel, wx.ID_ANY,
-                                               size=(100,10), value='resync')
+        self.shiftMagnitudeValue = wx.TextCtrl(self.panel, wx.ID_ANY, size=(120, 23),
+                                               value='Shift amount')
+        self.shiftedFileNameText = wx.TextCtrl(self.panel, wx.ID_ANY, size=(120, 23),
+                                               value='Shifted file name')
 
         self.shiftButton = wx.Button(self.panel, wx.ID_ANY, label='Shift')
 
@@ -46,16 +49,21 @@ class Gui(wx.Frame):
         self.shiftSizer.Add(self.shiftSettingsSizer, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL,
                             10)
         self.shiftSizer.Add(self.shiftButton, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 30)
-        self.shiftSizer.Add(self.textConsole, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
+        self.shiftSizer.Add(self.textConsole, 3, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
 
-        self.shiftSettingsSizer.Add(self.shiftMagnitudeSpin, 1, wx.ALIGN_LEFT | wx.ALL,
-                                    10)
-        self.shiftSettingsSizer.Add(self.shiftedFileNameText, 1, wx.ALIGN_LEFT | wx.ALL,
-                                    10)
+        self.shiftSettingsSizer.Add(self.shiftMagnitudeValue, 1,
+                                    wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5)
+        self.shiftSettingsSizer.Add(self.shiftedFileNameText, 1,
+                                    wx.ALIGN_CENTRE_HORIZONTAL | wx.ALL, 5)
 
         self.panel.SetSizer(self.mainSizer)
         self.SetSizeHints((HEIGHT, WIDTH))  # Set minimum frame size
         self.Centre()
 
     def on_shift_button(self, e):
-        pass
+        srt_file_path = self.filePicker.GetPath()
+        new_file_name = self.shiftedFileNameText.GetValue()
+        shift = float(self.shiftMagnitudeValue.GetValue())
+        print(type(shift))
+        message = self.srt_shifter.shift_srt_file(srt_file_path, new_file_name, shift)
+        self.textConsole.SetValue(message)
