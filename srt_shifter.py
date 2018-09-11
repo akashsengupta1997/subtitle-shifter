@@ -124,6 +124,7 @@ class SrtShifter():
                     time_stamps = re.findall(self.time_stamp_regex, srt_text)
                     self.create_shifted_srt_file(shift, srt_text, time_stamps,
                                                  srt_file_path, new_file_name)
+                    message += "\n Shift successful."
                 return message
             except Exception:
                 continue

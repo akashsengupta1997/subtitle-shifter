@@ -1,4 +1,5 @@
 import wx
+import os
 from srt_shifter import SrtShifter
 
 
@@ -63,7 +64,15 @@ class Gui(wx.Frame):
     def on_shift_button(self, e):
         srt_file_path = self.filePicker.GetPath()
         new_file_name = self.shiftedFileNameText.GetValue()
-        shift = float(self.shiftMagnitudeValue.GetValue())
-        print(type(shift))
-        message = self.srt_shifter.shift_srt_file(srt_file_path, new_file_name, shift)
-        self.textConsole.SetValue(message)
+
+        if os.path.exists(srt_file_path):
+            try:
+                shift = float(self.shiftMagnitudeValue.GetValue())
+                message = self.srt_shifter.shift_srt_file(srt_file_path, new_file_name, shift)
+                self.textConsole.SetValue(message)
+            except ValueError:
+                self.textConsole.SetValue('Invalid shift amount.')
+
+        else:
+            self.textConsole.SetValue('Invalid file path.')
+
