@@ -134,12 +134,5 @@ def main(arg_list):
                 sys.exit(1)
             continue
 
-    # srt_file = open(srt_file_path, "r", encoding='windows-1252')
-    # srt_text = srt_file.read()
-    #
-    # time_stamps = re.findall(time_stamp_regex, srt_text)
-    # create_shifted_srt_file(shift, srt_text, time_stamps, srt_file_path)
-
-
 if __name__ == '__main__':
     main(sys.argv[1:])
